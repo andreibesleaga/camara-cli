@@ -10,8 +10,8 @@ import (
 	"os"
 	"slices"
 
+	"github.com/andreibesleaga/camara-cli/pkg/cmd"
 	"github.com/andreibesleaga/camara-go"
-	"github.com/stainless-sdks/camara-cli/pkg/cmd"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
