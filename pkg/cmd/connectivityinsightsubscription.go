@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -94,9 +93,10 @@ var connectivityinsightsSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "When this information is contained within an event notification, it SHALL be referred to as `subscriptionId` as per the Commonalities Event Notification Model.\n",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "When this information is contained within an event notification, it SHALL be referred to as `subscriptionId` as per the Commonalities Event Notification Model.\n",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -127,9 +127,10 @@ var connectivityinsightsSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "When this information is contained within an event notification, it SHALL be referred to as `subscriptionId` as per the Commonalities Event Notification Model.\n",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "When this information is contained within an event notification, it SHALL be referred to as `subscriptionId` as per the Commonalities Event Notification Model.\n",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -148,8 +149,6 @@ func handleConnectivityinsightsSubscriptionsCreate(ctx context.Context, cmd *cli
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectivityinsightSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -161,6 +160,8 @@ func handleConnectivityinsightsSubscriptionsCreate(ctx context.Context, cmd *cli
 		return err
 	}
 
+	params := camara.ConnectivityinsightSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Connectivityinsights.Subscriptions.New(ctx, params, options...)
@@ -170,8 +171,15 @@ func handleConnectivityinsightsSubscriptionsCreate(ctx context.Context, cmd *cli
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectivityinsights:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectivityinsights:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleConnectivityinsightsSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -185,8 +193,6 @@ func handleConnectivityinsightsSubscriptionsRetrieve(ctx context.Context, cmd *c
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectivityinsightSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -197,6 +203,8 @@ func handleConnectivityinsightsSubscriptionsRetrieve(ctx context.Context, cmd *c
 	if err != nil {
 		return err
 	}
+
+	params := camara.ConnectivityinsightSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -212,8 +220,15 @@ func handleConnectivityinsightsSubscriptionsRetrieve(ctx context.Context, cmd *c
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectivityinsights:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectivityinsights:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleConnectivityinsightsSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -223,8 +238,6 @@ func handleConnectivityinsightsSubscriptionsList(ctx context.Context, cmd *cli.C
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.ConnectivityinsightSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -237,6 +250,8 @@ func handleConnectivityinsightsSubscriptionsList(ctx context.Context, cmd *cli.C
 		return err
 	}
 
+	params := camara.ConnectivityinsightSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Connectivityinsights.Subscriptions.List(ctx, params, options...)
@@ -246,8 +261,15 @@ func handleConnectivityinsightsSubscriptionsList(ctx context.Context, cmd *cli.C
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectivityinsights:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectivityinsights:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleConnectivityinsightsSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -261,8 +283,6 @@ func handleConnectivityinsightsSubscriptionsDelete(ctx context.Context, cmd *cli
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectivityinsightSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -273,6 +293,8 @@ func handleConnectivityinsightsSubscriptionsDelete(ctx context.Context, cmd *cli
 	if err != nil {
 		return err
 	}
+
+	params := camara.ConnectivityinsightSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -288,6 +310,13 @@ func handleConnectivityinsightsSubscriptionsDelete(ctx context.Context, cmd *cli
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectivityinsights:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectivityinsights:subscriptions delete",
+		Transform:      transform,
+	})
 }

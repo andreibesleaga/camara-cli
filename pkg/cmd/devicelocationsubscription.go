@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -20,7 +19,7 @@ var devicelocationSubscriptionsCreate = requestflag.WithInnerFlags(cli.Command{
 	Usage:   "Create a subscription for a device to receive notifications when the device\nenters or exits a specified area.",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "config",
 			Usage:    "Implementation-specific configuration parameters are needed by the subscription manager for acquiring events.\nIn CAMARA we have predefined attributes like `subscriptionExpireTime`, `subscriptionMaxEvents`, `initialEvent`.\n",
 			Required: true,
@@ -72,9 +71,10 @@ var devicelocationSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -105,9 +105,10 @@ var devicelocationSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -126,8 +127,6 @@ func handleDevicelocationSubscriptionsCreate(ctx context.Context, cmd *cli.Comma
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicelocationSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -139,6 +138,8 @@ func handleDevicelocationSubscriptionsCreate(ctx context.Context, cmd *cli.Comma
 		return err
 	}
 
+	params := camara.DevicelocationSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Devicelocation.Subscriptions.New(ctx, params, options...)
@@ -148,8 +149,15 @@ func handleDevicelocationSubscriptionsCreate(ctx context.Context, cmd *cli.Comma
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicelocation:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicelocation:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleDevicelocationSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -163,8 +171,6 @@ func handleDevicelocationSubscriptionsRetrieve(ctx context.Context, cmd *cli.Com
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicelocationSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -175,6 +181,8 @@ func handleDevicelocationSubscriptionsRetrieve(ctx context.Context, cmd *cli.Com
 	if err != nil {
 		return err
 	}
+
+	params := camara.DevicelocationSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -190,8 +198,15 @@ func handleDevicelocationSubscriptionsRetrieve(ctx context.Context, cmd *cli.Com
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicelocation:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicelocation:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleDevicelocationSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -201,8 +216,6 @@ func handleDevicelocationSubscriptionsList(ctx context.Context, cmd *cli.Command
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.DevicelocationSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -215,6 +228,8 @@ func handleDevicelocationSubscriptionsList(ctx context.Context, cmd *cli.Command
 		return err
 	}
 
+	params := camara.DevicelocationSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Devicelocation.Subscriptions.List(ctx, params, options...)
@@ -224,8 +239,15 @@ func handleDevicelocationSubscriptionsList(ctx context.Context, cmd *cli.Command
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicelocation:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicelocation:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleDevicelocationSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -239,8 +261,6 @@ func handleDevicelocationSubscriptionsDelete(ctx context.Context, cmd *cli.Comma
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicelocationSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -251,6 +271,8 @@ func handleDevicelocationSubscriptionsDelete(ctx context.Context, cmd *cli.Comma
 	if err != nil {
 		return err
 	}
+
+	params := camara.DevicelocationSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -266,6 +288,13 @@ func handleDevicelocationSubscriptionsDelete(ctx context.Context, cmd *cli.Comma
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicelocation:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicelocation:subscriptions delete",
+		Transform:      transform,
+	})
 }

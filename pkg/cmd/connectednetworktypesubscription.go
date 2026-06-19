@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -94,9 +93,10 @@ var connectednetworktypeSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -127,9 +127,10 @@ var connectednetworktypeSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -148,8 +149,6 @@ func handleConnectednetworktypeSubscriptionsCreate(ctx context.Context, cmd *cli
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectednetworktypeSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -161,6 +160,8 @@ func handleConnectednetworktypeSubscriptionsCreate(ctx context.Context, cmd *cli
 		return err
 	}
 
+	params := camara.ConnectednetworktypeSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Connectednetworktype.Subscriptions.New(ctx, params, options...)
@@ -170,8 +171,15 @@ func handleConnectednetworktypeSubscriptionsCreate(ctx context.Context, cmd *cli
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectednetworktype:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectednetworktype:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleConnectednetworktypeSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -185,8 +193,6 @@ func handleConnectednetworktypeSubscriptionsRetrieve(ctx context.Context, cmd *c
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectednetworktypeSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -197,6 +203,8 @@ func handleConnectednetworktypeSubscriptionsRetrieve(ctx context.Context, cmd *c
 	if err != nil {
 		return err
 	}
+
+	params := camara.ConnectednetworktypeSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -212,8 +220,15 @@ func handleConnectednetworktypeSubscriptionsRetrieve(ctx context.Context, cmd *c
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectednetworktype:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectednetworktype:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleConnectednetworktypeSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -223,8 +238,6 @@ func handleConnectednetworktypeSubscriptionsList(ctx context.Context, cmd *cli.C
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.ConnectednetworktypeSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -237,6 +250,8 @@ func handleConnectednetworktypeSubscriptionsList(ctx context.Context, cmd *cli.C
 		return err
 	}
 
+	params := camara.ConnectednetworktypeSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Connectednetworktype.Subscriptions.List(ctx, params, options...)
@@ -246,8 +261,15 @@ func handleConnectednetworktypeSubscriptionsList(ctx context.Context, cmd *cli.C
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectednetworktype:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectednetworktype:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleConnectednetworktypeSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -261,8 +283,6 @@ func handleConnectednetworktypeSubscriptionsDelete(ctx context.Context, cmd *cli
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.ConnectednetworktypeSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -273,6 +293,8 @@ func handleConnectednetworktypeSubscriptionsDelete(ctx context.Context, cmd *cli
 	if err != nil {
 		return err
 	}
+
+	params := camara.ConnectednetworktypeSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -288,6 +310,13 @@ func handleConnectednetworktypeSubscriptionsDelete(ctx context.Context, cmd *cli
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "connectednetworktype:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "connectednetworktype:subscriptions delete",
+		Transform:      transform,
+	})
 }

@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -61,8 +60,6 @@ func handleCallforwardingsignalCheckActiveForwardings(ctx context.Context, cmd *
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.CallforwardingsignalCheckActiveForwardingsParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -73,6 +70,8 @@ func handleCallforwardingsignalCheckActiveForwardings(ctx context.Context, cmd *
 	if err != nil {
 		return err
 	}
+
+	params := camara.CallforwardingsignalCheckActiveForwardingsParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -83,8 +82,15 @@ func handleCallforwardingsignalCheckActiveForwardings(ctx context.Context, cmd *
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "callforwardingsignal check-active-forwardings", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "callforwardingsignal check-active-forwardings",
+		Transform:      transform,
+	})
 }
 
 func handleCallforwardingsignalCheckUnconditionalForwarding(ctx context.Context, cmd *cli.Command) error {
@@ -94,8 +100,6 @@ func handleCallforwardingsignalCheckUnconditionalForwarding(ctx context.Context,
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.CallforwardingsignalCheckUnconditionalForwardingParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -108,6 +112,8 @@ func handleCallforwardingsignalCheckUnconditionalForwarding(ctx context.Context,
 		return err
 	}
 
+	params := camara.CallforwardingsignalCheckUnconditionalForwardingParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Callforwardingsignal.CheckUnconditionalForwarding(ctx, params, options...)
@@ -117,6 +123,13 @@ func handleCallforwardingsignalCheckUnconditionalForwarding(ctx context.Context,
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "callforwardingsignal check-unconditional-forwarding", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "callforwardingsignal check-unconditional-forwarding",
+		Transform:      transform,
+	})
 }

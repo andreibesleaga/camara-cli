@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -67,8 +66,6 @@ func handleDeviceswapCheck(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceswapCheckParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -79,6 +76,8 @@ func handleDeviceswapCheck(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := camara.DeviceswapCheckParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -89,8 +88,15 @@ func handleDeviceswapCheck(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceswap check", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceswap check",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceswapRetrieveDate(ctx context.Context, cmd *cli.Command) error {
@@ -100,8 +106,6 @@ func handleDeviceswapRetrieveDate(ctx context.Context, cmd *cli.Command) error {
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.DeviceswapGetDateParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -114,6 +118,8 @@ func handleDeviceswapRetrieveDate(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := camara.DeviceswapGetDateParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Deviceswap.GetDate(ctx, params, options...)
@@ -123,6 +129,13 @@ func handleDeviceswapRetrieveDate(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceswap retrieve-date", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceswap retrieve-date",
+		Transform:      transform,
+	})
 }

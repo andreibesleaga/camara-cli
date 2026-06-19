@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -41,6 +40,32 @@ var otpvalidationSendCode = cli.Command{
 	HideHelpCommand: true,
 }
 
+var otpvalidationValidateCode = cli.Command{
+	Name:    "validate-code",
+	Usage:   "Verifies the code is valid for the received authenticationId",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:     "authentication-id",
+			Usage:    "unique id of the verification attempt the code belongs to.",
+			Required: true,
+			BodyPath: "authenticationId",
+		},
+		&requestflag.Flag[string]{
+			Name:     "code",
+			Usage:    "temporal, short code to be validated",
+			Required: true,
+			BodyPath: "code",
+		},
+		&requestflag.Flag[string]{
+			Name:       "x-correlator",
+			HeaderPath: "x-correlator",
+		},
+	},
+	Action:          handleOtpvalidationValidateCode,
+	HideHelpCommand: true,
+}
+
 func handleOtpvalidationSendCode(ctx context.Context, cmd *cli.Command) error {
 	client := camara.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
@@ -48,8 +73,6 @@ func handleOtpvalidationSendCode(ctx context.Context, cmd *cli.Command) error {
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.OtpvalidationSendCodeParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -62,6 +85,8 @@ func handleOtpvalidationSendCode(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := camara.OtpvalidationSendCodeParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Otpvalidation.SendCode(ctx, params, options...)
@@ -71,6 +96,37 @@ func handleOtpvalidationSendCode(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "otpvalidation send-code", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "otpvalidation send-code",
+		Transform:      transform,
+	})
+}
+
+func handleOtpvalidationValidateCode(ctx context.Context, cmd *cli.Command) error {
+	client := camara.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatComma,
+		ApplicationJSON,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := camara.OtpvalidationValidateCodeParams{}
+
+	return client.Otpvalidation.ValidateCode(ctx, params, options...)
 }

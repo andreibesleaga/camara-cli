@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -21,9 +20,10 @@ var qualityondemandRetrieveQosProfile = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "name",
-			Usage:    "A unique name for identifying a specific QoS profile.\nThis may follow different formats depending on the service providers implementation.\nSome options addresses:\n  - A UUID style string\n  - Support for predefined profile names like `QOS_E`, `QOS_S`, `QOS_M`, and `QOS_L`\n  - A searchable descriptive name\n",
-			Required: true,
+			Name:      "name",
+			Usage:     "A unique name for identifying a specific QoS profile.\nThis may follow different formats depending on the service providers implementation.\nSome options addresses:\n  - A UUID style string\n  - Support for predefined profile names like `QOS_E`, `QOS_S`, `QOS_M`, and `QOS_L`\n  - A searchable descriptive name\n",
+			Required:  true,
+			PathParam: "name",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -99,8 +99,6 @@ func handleQualityondemandRetrieveQosProfile(ctx context.Context, cmd *cli.Comma
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.QualityondemandGetQosProfileParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -111,6 +109,8 @@ func handleQualityondemandRetrieveQosProfile(ctx context.Context, cmd *cli.Comma
 	if err != nil {
 		return err
 	}
+
+	params := camara.QualityondemandGetQosProfileParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -126,8 +126,15 @@ func handleQualityondemandRetrieveQosProfile(ctx context.Context, cmd *cli.Comma
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "qualityondemand retrieve-qos-profile", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "qualityondemand retrieve-qos-profile",
+		Transform:      transform,
+	})
 }
 
 func handleQualityondemandRetrieveQosProfiles(ctx context.Context, cmd *cli.Command) error {
@@ -137,8 +144,6 @@ func handleQualityondemandRetrieveQosProfiles(ctx context.Context, cmd *cli.Comm
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.QualityondemandGetQosProfilesParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -151,6 +156,8 @@ func handleQualityondemandRetrieveQosProfiles(ctx context.Context, cmd *cli.Comm
 		return err
 	}
 
+	params := camara.QualityondemandGetQosProfilesParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Qualityondemand.GetQosProfiles(ctx, params, options...)
@@ -160,6 +167,13 @@ func handleQualityondemandRetrieveQosProfiles(ctx context.Context, cmd *cli.Comm
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "qualityondemand retrieve-qos-profiles", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "qualityondemand retrieve-qos-profiles",
+		Transform:      transform,
+	})
 }

@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"bytes"
 	"compress/gzip"
 	"context"
 	"fmt"
@@ -11,20 +12,24 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/stainless-sdks/camara-cli/internal/autocomplete"
+	"github.com/stainless-sdks/camara-cli/internal/requestflag"
 	docs "github.com/urfave/cli-docs/v3"
 	"github.com/urfave/cli/v3"
 )
 
 var (
-	Command *cli.Command
+	Command            *cli.Command
+	CommandErrorBuffer bytes.Buffer
 )
 
 func init() {
 	Command = &cli.Command{
-		Name:    "camara",
-		Usage:   "CLI for the camara API",
-		Suggest: true,
-		Version: Version,
+		Name:      "camara",
+		Usage:     "CLI for the camara API",
+		Suggest:   true,
+		Version:   Version,
+		ErrWriter: &CommandErrorBuffer,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:  "debug",
@@ -34,6 +39,9 @@ func init() {
 				Name:        "base-url",
 				DefaultText: "url",
 				Usage:       "Override the base URL for API requests",
+				Validator: func(baseURL string) error {
+					return ValidateBaseURL(baseURL, "--base-url")
+				},
 			},
 			&cli.StringFlag{
 				Name:  "format",
@@ -64,6 +72,131 @@ func init() {
 			&cli.StringFlag{
 				Name:  "transform-error",
 				Usage: "The GJSON transformation for errors.",
+			},
+			&cli.BoolFlag{
+				Name:    "raw-output",
+				Aliases: []string{"r"},
+				Usage:   "If the result is a string, print it without JSON quotes. This can be useful for making output transforms talk to non-JSON-based systems.",
+			},
+			&requestflag.Flag[string]{
+				Name:    "bearer-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "customer-insights-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-swap-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "kyc-age-verification-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "kyc-fill-in-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "kyc-match-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "tenure-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "number-recycling-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "otp-validation-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "call-forwarding-signal-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-location-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "population-density-data-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "region-device-count-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "web-rtc-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "connectivity-insights-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "quality-on-demand-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-identifier-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "sim-swap-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-roaming-status-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-reachability-status-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "connected-network-type-token",
+				Sources: cli.EnvVars("CAMARA_BEARER_TOKEN"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-location-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_DEVICE_LOCATION_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "population-density-data-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_POPULATION_DENSITY_DATA_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "region-device-count-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_REGION_DEVICE_COUNT_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "connectivity-insights-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_CONNECTIVITY_INSIGHTS_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "sim-swap-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_SIM_SWAP_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-roaming-status-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_DEVICE_ROAMING_STATUS_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "device-reachability-status-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_DEVICE_REACHABILITY_STATUS_NOTIFICATIONS_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "connected-network-type-notifications-api-key",
+				Sources: cli.EnvVars("CAMARA_CONNECTED_NETWORK_TYPE_NOTIFICATIONS_API_KEY"),
 			},
 		},
 		Commands: []*cli.Command{
@@ -130,6 +263,7 @@ func init() {
 				Suggest:  true,
 				Commands: []*cli.Command{
 					&otpvalidationSendCode,
+					&otpvalidationValidateCode,
 				},
 			},
 			{
@@ -175,6 +309,7 @@ func init() {
 				Commands: []*cli.Command{
 					&webrtcSessionsCreate,
 					&webrtcSessionsRetrieve,
+					&webrtcSessionsDelete,
 					&webrtcSessionsUpdateStatus,
 				},
 			},
@@ -280,10 +415,20 @@ func init() {
 					},
 				},
 			},
+			{
+				Name:            "__complete",
+				Hidden:          true,
+				HideHelpCommand: true,
+				Action:          autocomplete.ExecuteShellCompletion,
+			},
+			{
+				Name:            "@completion",
+				Hidden:          true,
+				HideHelpCommand: true,
+				Action:          autocomplete.OutputCompletionScript,
+			},
 		},
-		EnableShellCompletion:      true,
-		ShellCompletionCommandName: "@completion",
-		HideHelpCommand:            true,
+		HideHelpCommand: true,
 	}
 }
 
