@@ -16,8 +16,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/andreibesleaga/camara-go/option"
 	"github.com/stainless-sdks/camara-cli/internal/jsonview"
-	"github.com/stainless-sdks/camara-go/option"
 
 	"github.com/charmbracelet/x/term"
 	"github.com/itchyny/json2yaml"
