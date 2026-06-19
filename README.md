@@ -4,7 +4,7 @@ The official CLI for the Camara REST API.
 
 It is generated with [Stainless](https://www.stainless.com/).
 
-<!-- x-release-please-start-version -->
+API Reference: https://github.com/andreibesleaga/camara-api-reference
 
 ## Installation
 
