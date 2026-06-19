@@ -15,7 +15,7 @@ on:
       - 'stl-preview-base/**'
 
 env:
-  GOPRIVATE: github.com/stainless-sdks/camara-go
+  GOPRIVATE: github.com/andreibesleaga/camara-go,github.com/stainless-sdks/camara-go
 
 jobs:
   lint:

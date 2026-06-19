@@ -16,11 +16,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/andreibesleaga/camara-go/option"
 	"github.com/stainless-sdks/camara-cli/internal/apiform"
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/debugmiddleware"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
-	"github.com/stainless-sdks/camara-go/option"
 
 	"github.com/goccy/go-yaml"
 	"github.com/urfave/cli/v3"
