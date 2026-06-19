@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/camara-cli/internal/mocktest"
+	"github.com/andreibesleaga/camara-cli/internal/mocktest"
 )
 
 func TestCustomerinsightsScoringRetrieve(t *testing.T) {

@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/andreibesleaga/camara-cli/internal/apiquery"
+	"github.com/andreibesleaga/camara-cli/internal/requestflag"
 	"github.com/andreibesleaga/camara-go"
 	"github.com/andreibesleaga/camara-go/option"
-	"github.com/stainless-sdks/camara-cli/internal/apiquery"
-	"github.com/stainless-sdks/camara-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
