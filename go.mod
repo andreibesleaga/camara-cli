@@ -1,4 +1,4 @@
-module github.com/stainless-sdks/camara-cli
+module github.com/andreibesleaga/camara-cli
 
 go 1.25
 

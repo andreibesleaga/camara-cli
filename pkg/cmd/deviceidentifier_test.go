@@ -5,8 +5,8 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/camara-cli/internal/mocktest"
-	"github.com/stainless-sdks/camara-cli/internal/requestflag"
+	"github.com/andreibesleaga/camara-cli/internal/mocktest"
+	"github.com/andreibesleaga/camara-cli/internal/requestflag"
 )
 
 func TestDeviceidentifierRetrieveIdentifier(t *testing.T) {
