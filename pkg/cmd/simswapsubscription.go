@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -89,9 +88,10 @@ var simswapSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -122,9 +122,10 @@ var simswapSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -143,8 +144,6 @@ func handleSimswapSubscriptionsCreate(ctx context.Context, cmd *cli.Command) err
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.SimswapSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -156,6 +155,8 @@ func handleSimswapSubscriptionsCreate(ctx context.Context, cmd *cli.Command) err
 		return err
 	}
 
+	params := camara.SimswapSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Simswap.Subscriptions.New(ctx, params, options...)
@@ -165,8 +166,15 @@ func handleSimswapSubscriptionsCreate(ctx context.Context, cmd *cli.Command) err
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "simswap:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "simswap:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleSimswapSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -180,8 +188,6 @@ func handleSimswapSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) e
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.SimswapSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -192,6 +198,8 @@ func handleSimswapSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) e
 	if err != nil {
 		return err
 	}
+
+	params := camara.SimswapSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -207,8 +215,15 @@ func handleSimswapSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) e
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "simswap:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "simswap:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleSimswapSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -218,8 +233,6 @@ func handleSimswapSubscriptionsList(ctx context.Context, cmd *cli.Command) error
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.SimswapSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -232,6 +245,8 @@ func handleSimswapSubscriptionsList(ctx context.Context, cmd *cli.Command) error
 		return err
 	}
 
+	params := camara.SimswapSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Simswap.Subscriptions.List(ctx, params, options...)
@@ -241,8 +256,15 @@ func handleSimswapSubscriptionsList(ctx context.Context, cmd *cli.Command) error
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "simswap:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "simswap:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleSimswapSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -256,8 +278,6 @@ func handleSimswapSubscriptionsDelete(ctx context.Context, cmd *cli.Command) err
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.SimswapSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -268,6 +288,8 @@ func handleSimswapSubscriptionsDelete(ctx context.Context, cmd *cli.Command) err
 	if err != nil {
 		return err
 	}
+
+	params := camara.SimswapSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -283,6 +305,13 @@ func handleSimswapSubscriptionsDelete(ctx context.Context, cmd *cli.Command) err
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "simswap:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "simswap:subscriptions delete",
+		Transform:      transform,
+	})
 }

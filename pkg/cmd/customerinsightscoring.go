@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -52,8 +51,6 @@ func handleCustomerinsightsScoringRetrieve(ctx context.Context, cmd *cli.Command
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.CustomerinsightScoringGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -65,6 +62,8 @@ func handleCustomerinsightsScoringRetrieve(ctx context.Context, cmd *cli.Command
 		return err
 	}
 
+	params := camara.CustomerinsightScoringGetParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Customerinsights.Scoring.Get(ctx, params, options...)
@@ -74,6 +73,13 @@ func handleCustomerinsightsScoringRetrieve(ctx context.Context, cmd *cli.Command
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "customerinsights:scoring retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "customerinsights:scoring retrieve",
+		Transform:      transform,
+	})
 }

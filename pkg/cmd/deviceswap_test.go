@@ -9,22 +9,168 @@ import (
 )
 
 func TestDeviceswapCheck(t *testing.T) {
-	t.Skip("Prism tests are disabled")
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"deviceswap", "check",
-		"--max-age", "120",
-		"--phone-number", "+34666111333",
-		"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
-	)
+	t.Skip("Mock server tests are disabled")
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--bearer-token", "string",
+			"--customer-insights-token", "string",
+			"--device-swap-token", "string",
+			"--kyc-age-verification-token", "string",
+			"--kyc-fill-in-token", "string",
+			"--kyc-match-token", "string",
+			"--tenure-token", "string",
+			"--number-recycling-token", "string",
+			"--otp-validation-token", "string",
+			"--call-forwarding-signal-token", "string",
+			"--device-location-token", "string",
+			"--population-density-data-token", "string",
+			"--region-device-count-token", "string",
+			"--web-rtc-token", "string",
+			"--connectivity-insights-token", "string",
+			"--quality-on-demand-token", "string",
+			"--device-identifier-token", "string",
+			"--sim-swap-token", "string",
+			"--device-roaming-status-token", "string",
+			"--device-reachability-status-token", "string",
+			"--connected-network-type-token", "string",
+			"--device-location-notifications-api-key", "string",
+			"--notifications-api-key", "string",
+			"--population-density-data-notifications-api-key", "string",
+			"--region-device-count-notifications-api-key", "string",
+			"--connectivity-insights-notifications-api-key", "string",
+			"--sim-swap-notifications-api-key", "string",
+			"--device-roaming-status-notifications-api-key", "string",
+			"--device-reachability-status-notifications-api-key", "string",
+			"--connected-network-type-notifications-api-key", "string",
+			"deviceswap", "check",
+			"--max-age", "120",
+			"--phone-number", "+34666111333",
+			"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
+		)
+	})
+
+	t.Run("piping data", func(t *testing.T) {
+		// Test piping YAML data over stdin
+		pipeData := []byte("" +
+			"maxAge: 120\n" +
+			"phoneNumber: '+34666111333'\n")
+		mocktest.TestRunMockTestWithPipeAndFlags(
+			t, pipeData,
+			"--bearer-token", "string",
+			"--customer-insights-token", "string",
+			"--device-swap-token", "string",
+			"--kyc-age-verification-token", "string",
+			"--kyc-fill-in-token", "string",
+			"--kyc-match-token", "string",
+			"--tenure-token", "string",
+			"--number-recycling-token", "string",
+			"--otp-validation-token", "string",
+			"--call-forwarding-signal-token", "string",
+			"--device-location-token", "string",
+			"--population-density-data-token", "string",
+			"--region-device-count-token", "string",
+			"--web-rtc-token", "string",
+			"--connectivity-insights-token", "string",
+			"--quality-on-demand-token", "string",
+			"--device-identifier-token", "string",
+			"--sim-swap-token", "string",
+			"--device-roaming-status-token", "string",
+			"--device-reachability-status-token", "string",
+			"--connected-network-type-token", "string",
+			"--device-location-notifications-api-key", "string",
+			"--notifications-api-key", "string",
+			"--population-density-data-notifications-api-key", "string",
+			"--region-device-count-notifications-api-key", "string",
+			"--connectivity-insights-notifications-api-key", "string",
+			"--sim-swap-notifications-api-key", "string",
+			"--device-roaming-status-notifications-api-key", "string",
+			"--device-reachability-status-notifications-api-key", "string",
+			"--connected-network-type-notifications-api-key", "string",
+			"deviceswap", "check",
+			"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
+		)
+	})
 }
 
 func TestDeviceswapRetrieveDate(t *testing.T) {
-	t.Skip("Prism tests are disabled")
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"deviceswap", "retrieve-date",
-		"--phone-number", "+34666111333",
-		"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
-	)
+	t.Skip("Mock server tests are disabled")
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--bearer-token", "string",
+			"--customer-insights-token", "string",
+			"--device-swap-token", "string",
+			"--kyc-age-verification-token", "string",
+			"--kyc-fill-in-token", "string",
+			"--kyc-match-token", "string",
+			"--tenure-token", "string",
+			"--number-recycling-token", "string",
+			"--otp-validation-token", "string",
+			"--call-forwarding-signal-token", "string",
+			"--device-location-token", "string",
+			"--population-density-data-token", "string",
+			"--region-device-count-token", "string",
+			"--web-rtc-token", "string",
+			"--connectivity-insights-token", "string",
+			"--quality-on-demand-token", "string",
+			"--device-identifier-token", "string",
+			"--sim-swap-token", "string",
+			"--device-roaming-status-token", "string",
+			"--device-reachability-status-token", "string",
+			"--connected-network-type-token", "string",
+			"--device-location-notifications-api-key", "string",
+			"--notifications-api-key", "string",
+			"--population-density-data-notifications-api-key", "string",
+			"--region-device-count-notifications-api-key", "string",
+			"--connectivity-insights-notifications-api-key", "string",
+			"--sim-swap-notifications-api-key", "string",
+			"--device-roaming-status-notifications-api-key", "string",
+			"--device-reachability-status-notifications-api-key", "string",
+			"--connected-network-type-notifications-api-key", "string",
+			"deviceswap", "retrieve-date",
+			"--phone-number", "+34666111333",
+			"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
+		)
+	})
+
+	t.Run("piping data", func(t *testing.T) {
+		// Test piping YAML data over stdin
+		pipeData := []byte("phoneNumber: '+34666111333'")
+		mocktest.TestRunMockTestWithPipeAndFlags(
+			t, pipeData,
+			"--bearer-token", "string",
+			"--customer-insights-token", "string",
+			"--device-swap-token", "string",
+			"--kyc-age-verification-token", "string",
+			"--kyc-fill-in-token", "string",
+			"--kyc-match-token", "string",
+			"--tenure-token", "string",
+			"--number-recycling-token", "string",
+			"--otp-validation-token", "string",
+			"--call-forwarding-signal-token", "string",
+			"--device-location-token", "string",
+			"--population-density-data-token", "string",
+			"--region-device-count-token", "string",
+			"--web-rtc-token", "string",
+			"--connectivity-insights-token", "string",
+			"--quality-on-demand-token", "string",
+			"--device-identifier-token", "string",
+			"--sim-swap-token", "string",
+			"--device-roaming-status-token", "string",
+			"--device-reachability-status-token", "string",
+			"--connected-network-type-token", "string",
+			"--device-location-notifications-api-key", "string",
+			"--notifications-api-key", "string",
+			"--population-density-data-notifications-api-key", "string",
+			"--region-device-count-notifications-api-key", "string",
+			"--connectivity-insights-notifications-api-key", "string",
+			"--sim-swap-notifications-api-key", "string",
+			"--device-roaming-status-notifications-api-key", "string",
+			"--device-reachability-status-notifications-api-key", "string",
+			"--connected-network-type-notifications-api-key", "string",
+			"deviceswap", "retrieve-date",
+			"--x-correlator", "b4333c46-49c0-4f62-80d7-f0ef930f1c46",
+		)
+	})
 }

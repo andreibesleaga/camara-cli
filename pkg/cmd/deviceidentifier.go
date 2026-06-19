@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -149,8 +148,6 @@ func handleDeviceidentifierRetrieveIdentifier(ctx context.Context, cmd *cli.Comm
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceidentifierGetIdentifierParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -161,6 +158,8 @@ func handleDeviceidentifierRetrieveIdentifier(ctx context.Context, cmd *cli.Comm
 	if err != nil {
 		return err
 	}
+
+	params := camara.DeviceidentifierGetIdentifierParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -171,8 +170,15 @@ func handleDeviceidentifierRetrieveIdentifier(ctx context.Context, cmd *cli.Comm
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceidentifier retrieve-identifier", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceidentifier retrieve-identifier",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceidentifierRetrievePpid(ctx context.Context, cmd *cli.Command) error {
@@ -183,8 +189,6 @@ func handleDeviceidentifierRetrievePpid(ctx context.Context, cmd *cli.Command) e
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceidentifierGetPpidParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -195,6 +199,8 @@ func handleDeviceidentifierRetrievePpid(ctx context.Context, cmd *cli.Command) e
 	if err != nil {
 		return err
 	}
+
+	params := camara.DeviceidentifierGetPpidParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -205,8 +211,15 @@ func handleDeviceidentifierRetrievePpid(ctx context.Context, cmd *cli.Command) e
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceidentifier retrieve-ppid", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceidentifier retrieve-ppid",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceidentifierRetrieveType(ctx context.Context, cmd *cli.Command) error {
@@ -216,8 +229,6 @@ func handleDeviceidentifierRetrieveType(ctx context.Context, cmd *cli.Command) e
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.DeviceidentifierGetTypeParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -230,6 +241,8 @@ func handleDeviceidentifierRetrieveType(ctx context.Context, cmd *cli.Command) e
 		return err
 	}
 
+	params := camara.DeviceidentifierGetTypeParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Deviceidentifier.GetType(ctx, params, options...)
@@ -239,6 +252,13 @@ func handleDeviceidentifierRetrieveType(ctx context.Context, cmd *cli.Command) e
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceidentifier retrieve-type", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceidentifier retrieve-type",
+		Transform:      transform,
+	})
 }

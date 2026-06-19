@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -162,8 +161,6 @@ func handleKnowyourcustomermatchMatch(ctx context.Context, cmd *cli.Command) err
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.KnowyourcustomermatchMatchParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -175,6 +172,8 @@ func handleKnowyourcustomermatchMatch(ctx context.Context, cmd *cli.Command) err
 		return err
 	}
 
+	params := camara.KnowyourcustomermatchMatchParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Knowyourcustomermatch.Match(ctx, params, options...)
@@ -184,6 +183,13 @@ func handleKnowyourcustomermatchMatch(ctx context.Context, cmd *cli.Command) err
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "knowyourcustomermatch match", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "knowyourcustomermatch match",
+		Transform:      transform,
+	})
 }

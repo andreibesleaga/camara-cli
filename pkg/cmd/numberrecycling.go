@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -48,8 +47,6 @@ func handleNumberrecyclingCheckSubscriberChange(ctx context.Context, cmd *cli.Co
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.NumberrecyclingCheckSubscriberChangeParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -61,6 +58,8 @@ func handleNumberrecyclingCheckSubscriberChange(ctx context.Context, cmd *cli.Co
 		return err
 	}
 
+	params := camara.NumberrecyclingCheckSubscriberChangeParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Numberrecycling.CheckSubscriberChange(ctx, params, options...)
@@ -70,6 +69,13 @@ func handleNumberrecyclingCheckSubscriberChange(ctx context.Context, cmd *cli.Co
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "numberrecycling check-subscriber-change", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "numberrecycling check-subscriber-change",
+		Transform:      transform,
+	})
 }

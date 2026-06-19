@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -94,9 +93,10 @@ var deviceroamingstatusSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -127,9 +127,10 @@ var deviceroamingstatusSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -148,8 +149,6 @@ func handleDeviceroamingstatusSubscriptionsCreate(ctx context.Context, cmd *cli.
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceroamingstatusSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -161,6 +160,8 @@ func handleDeviceroamingstatusSubscriptionsCreate(ctx context.Context, cmd *cli.
 		return err
 	}
 
+	params := camara.DeviceroamingstatusSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Deviceroamingstatus.Subscriptions.New(ctx, params, options...)
@@ -170,8 +171,15 @@ func handleDeviceroamingstatusSubscriptionsCreate(ctx context.Context, cmd *cli.
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceroamingstatus:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceroamingstatus:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceroamingstatusSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -185,8 +193,6 @@ func handleDeviceroamingstatusSubscriptionsRetrieve(ctx context.Context, cmd *cl
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceroamingstatusSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -197,6 +203,8 @@ func handleDeviceroamingstatusSubscriptionsRetrieve(ctx context.Context, cmd *cl
 	if err != nil {
 		return err
 	}
+
+	params := camara.DeviceroamingstatusSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -212,8 +220,15 @@ func handleDeviceroamingstatusSubscriptionsRetrieve(ctx context.Context, cmd *cl
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceroamingstatus:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceroamingstatus:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceroamingstatusSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -223,8 +238,6 @@ func handleDeviceroamingstatusSubscriptionsList(ctx context.Context, cmd *cli.Co
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.DeviceroamingstatusSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -237,6 +250,8 @@ func handleDeviceroamingstatusSubscriptionsList(ctx context.Context, cmd *cli.Co
 		return err
 	}
 
+	params := camara.DeviceroamingstatusSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Deviceroamingstatus.Subscriptions.List(ctx, params, options...)
@@ -246,8 +261,15 @@ func handleDeviceroamingstatusSubscriptionsList(ctx context.Context, cmd *cli.Co
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceroamingstatus:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceroamingstatus:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleDeviceroamingstatusSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -261,8 +283,6 @@ func handleDeviceroamingstatusSubscriptionsDelete(ctx context.Context, cmd *cli.
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DeviceroamingstatusSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -273,6 +293,8 @@ func handleDeviceroamingstatusSubscriptionsDelete(ctx context.Context, cmd *cli.
 	if err != nil {
 		return err
 	}
+
+	params := camara.DeviceroamingstatusSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -288,6 +310,13 @@ func handleDeviceroamingstatusSubscriptionsDelete(ctx context.Context, cmd *cli.
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "deviceroamingstatus:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "deviceroamingstatus:subscriptions delete",
+		Transform:      transform,
+	})
 }

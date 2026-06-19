@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/stainless-sdks/camara-cli/internal/apiquery"
 	"github.com/stainless-sdks/camara-cli/internal/requestflag"
@@ -94,9 +93,10 @@ var devicereachabilitystatusSubscriptionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -127,9 +127,10 @@ var devicereachabilitystatusSubscriptionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "subscription-id",
-			Usage:    "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
-			Required: true,
+			Name:      "subscription-id",
+			Usage:     "The unique identifier of the subscription in the scope of the subscription manager. When this information is contained within an event notification, this concept SHALL be referred as subscriptionId as per Commonalities Event Notification Model.",
+			Required:  true,
+			PathParam: "subscriptionId",
 		},
 		&requestflag.Flag[string]{
 			Name:       "x-correlator",
@@ -148,8 +149,6 @@ func handleDevicereachabilitystatusSubscriptionsCreate(ctx context.Context, cmd 
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicereachabilitystatusSubscriptionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -161,6 +160,8 @@ func handleDevicereachabilitystatusSubscriptionsCreate(ctx context.Context, cmd 
 		return err
 	}
 
+	params := camara.DevicereachabilitystatusSubscriptionNewParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Devicereachabilitystatus.Subscriptions.New(ctx, params, options...)
@@ -170,8 +171,15 @@ func handleDevicereachabilitystatusSubscriptionsCreate(ctx context.Context, cmd 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicereachabilitystatus:subscriptions create", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicereachabilitystatus:subscriptions create",
+		Transform:      transform,
+	})
 }
 
 func handleDevicereachabilitystatusSubscriptionsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -185,8 +193,6 @@ func handleDevicereachabilitystatusSubscriptionsRetrieve(ctx context.Context, cm
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicereachabilitystatusSubscriptionGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -197,6 +203,8 @@ func handleDevicereachabilitystatusSubscriptionsRetrieve(ctx context.Context, cm
 	if err != nil {
 		return err
 	}
+
+	params := camara.DevicereachabilitystatusSubscriptionGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -212,8 +220,15 @@ func handleDevicereachabilitystatusSubscriptionsRetrieve(ctx context.Context, cm
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicereachabilitystatus:subscriptions retrieve", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicereachabilitystatus:subscriptions retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleDevicereachabilitystatusSubscriptionsList(ctx context.Context, cmd *cli.Command) error {
@@ -223,8 +238,6 @@ func handleDevicereachabilitystatusSubscriptionsList(ctx context.Context, cmd *c
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := camara.DevicereachabilitystatusSubscriptionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -237,6 +250,8 @@ func handleDevicereachabilitystatusSubscriptionsList(ctx context.Context, cmd *c
 		return err
 	}
 
+	params := camara.DevicereachabilitystatusSubscriptionListParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
 	_, err = client.Devicereachabilitystatus.Subscriptions.List(ctx, params, options...)
@@ -246,8 +261,15 @@ func handleDevicereachabilitystatusSubscriptionsList(ctx context.Context, cmd *c
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicereachabilitystatus:subscriptions list", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicereachabilitystatus:subscriptions list",
+		Transform:      transform,
+	})
 }
 
 func handleDevicereachabilitystatusSubscriptionsDelete(ctx context.Context, cmd *cli.Command) error {
@@ -261,8 +283,6 @@ func handleDevicereachabilitystatusSubscriptionsDelete(ctx context.Context, cmd 
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := camara.DevicereachabilitystatusSubscriptionDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -273,6 +293,8 @@ func handleDevicereachabilitystatusSubscriptionsDelete(ctx context.Context, cmd 
 	if err != nil {
 		return err
 	}
+
+	params := camara.DevicereachabilitystatusSubscriptionDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -288,6 +310,13 @@ func handleDevicereachabilitystatusSubscriptionsDelete(ctx context.Context, cmd 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "devicereachabilitystatus:subscriptions delete", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "devicereachabilitystatus:subscriptions delete",
+		Transform:      transform,
+	})
 }
