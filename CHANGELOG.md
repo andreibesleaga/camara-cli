@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.3 (2026-06-24)
+
+Full Changelog: [v0.0.2...v0.0.3](https://github.com/andreibesleaga/camara-cli/compare/v0.0.2...v0.0.3)
+
+### Chores
+
+* update SDK settings ([4dee5f4](https://github.com/andreibesleaga/camara-cli/commit/4dee5f4af0b9caacb169ffb1928d09a616e83487))
+
 ## 0.0.2 (2026-06-19)
 
 Full Changelog: [v0.0.1...v0.0.2](https://github.com/andreibesleaga/camara-cli/compare/v0.0.1...v0.0.2)
